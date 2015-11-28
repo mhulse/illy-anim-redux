@@ -1,22 +1,28 @@
+#target illustrator
+#targetengine main
+
 /**
  * @see https://gist.github.com/mhulse/aac5d6782868b612320b
  * @see https://gist.github.com/mhulse/eb0ffb2bd365975632d2
  */
 
-var STUB = (function(stub, app, title, undefined) {
+var ANIM2 = (function($ns, $app, undefined) {
 	
 	'use strict';
 	
 	var _title;
 	var _doc;
 	var _main;
+	var _btm;
+	var _func;
+	var _palette;
 	
-	stub.init = function($title) {
+	$ns.init = function($title) {
 		
-		if (app.documents.length > 0) {
+		if ($app.documents.length > 0) {
 			
 			_title = $title;
-			_doc = app.activeDocument;
+			_doc = $app.activeDocument;
 			
 			_main(); // Only run if there's at least one document open.
 			
@@ -30,61 +36,52 @@ var STUB = (function(stub, app, title, undefined) {
 	
 	_main = function() {
 		
+		var palette;
+		
+		// Main window:
+		//win = new Window('palette', TITLE, undefined, { resizeable: true });
+		palette = createPalette();
+		
+		// Window Lauch Properties:
+		palette.center();
+		palette.show();
+		
 		$.writeln(_doc.layers.length);
 		$.writeln(_title);
 		
-	}
+	};
 	
-	//var NS = 'FOO';
-	//var TITLE = 'Test';
-	//var doc = app.activeDocument; // Just to show that this can be here ...
-	
-	/*
-	// Need this for production:
-	if (app.documents.length > 0) {
-		doc = app.activeDocument;
-		if ( ! doc.saved) {
-			Window.alert('This script needs to modify your document. Please save it before running this script.');
-		} else {
-			init(); // Only run if there's at least one document open.
-		}
-	} else {
-		Window.alert('You must open at least one document.');
-	}
-	*/
-	
-	/*
 	// BridgeTalk message:
-	var btm = function(fun_name, parameters) {
+	_btm = function($name, $params) {
 		
-		var ref_parameters;
-		var bt;
-		var msg;
+		var params;
+		var button;
+		var message;
 		
-		// Test type of parameters:
-		if (parameters != undefined) {
-			if ((typeof parameters == 'string') || (parameters instanceof String)) {
-				ref_parameters = ((parameters != undefined) ? ('"' + parameters + '"') : '');
+		// Test type of params:
+		if ($params != undefined) {
+			if ((typeof $params == 'string') || ($params instanceof String)) {
+				params = (($params != undefined) ? ('"' + $params + '"') : '');
 			} else {
-				ref_parameters = parameters;
+				params = $params;
 			}
 		} else {
-			ref_parameters = '';
+			params = '';
 		}
 		
 		// Make BridgeTalk message:
-		bt = new BridgeTalk;
-		bt.target = 'illustrator';
-		msg = (eval(fun_name) + '\r ' + fun_name + '(' + ref_parameters + ');');
-		bt.body = msg;
-		bt.send();
+		button = new BridgeTalk;
+		button.target = 'illustrator';
+		message = (eval($name) + '\r ' + $name + '(' + params + ');');
+		button.body = message;
+		button.send();
 		
 	};
 	
 	// Get function name (use target function name without brackets):
-	var getFunctionName = function(fun_name) {
+	_func = function($name) {
 		
-		var ret = fun_name.toString();
+		var ret = $name.toString();
 		
 		ret = ret.substr('function '.length);
 		ret = ret.substr(0, ret.indexOf('('));
@@ -92,10 +89,8 @@ var STUB = (function(stub, app, title, undefined) {
 		return ret;
 		
 	};
-	*/
 	
-	/*
-	var createPalette = function() {
+	_palette = function() {
 		
 		// Controls width of palette window and children UI elements:
 		//var size = 200;
@@ -123,7 +118,7 @@ var STUB = (function(stub, app, title, undefined) {
 		var palette = new Window(meta);
 		
 		// Not sure if this works:
-		palette.resizeable = true;
+		// palette.resizeable = true;
 		
 		// Button:
 		palette._start.onClick = function() {
@@ -131,31 +126,31 @@ var STUB = (function(stub, app, title, undefined) {
 		}
 		
 		// Listbox:
-		myListbox = win.add('listbox', undefined, ['Text', 2], {
-			numberOfColumns: 1,
-			showHeaders: true,
-			columnTitles: ['Values']
-		});
+		// myListbox = win.add('listbox', undefined, ['Text', 2], {
+		// 	numberOfColumns: 1,
+		// 	showHeaders: true,
+		// 	columnTitles: ['Values']
+		// });
 		
 		// Button:
-		myButton = win.add('button', undefined, 'What Value?');
-		myButton.onClick = function() {
-			btm(getFunctionName(myFunction), myListbox.selection.text);
-		}
+		// myButton = win.add('button', undefined, 'What Value?');
+		// myButton.onClick = function() {
+		// 	btm(getFunctionName(myFunction), myListbox.selection.text);
+		// }
 		
 		// Close button:
-		win.btnQuit = win.add('button', undefined, 'Close');
-		win.btnQuit.onClick = function() { win.close(); }
+		// win.btnQuit = win.add('button', undefined, 'Close');
+		// win.btnQuit.onClick = function() { win.close(); }
 		
 		//palette.orientation = 'column';
-		//palette.alignChildren = ['fill', 'fill'];
+		// palette.alignChildren = ['fill', 'fill'];
 		
 		// Time input box:
-		//palette._time.active = true;
-		//palette._time.alignment = 'fill';
+		// palette._time.active = true;
+		// palette._time.alignment = 'fill';
 		
 		// Start button:
-		//palette._start.onClick = anim;
+		// palette._start.onClick = anim;
 		palette._start.alignment = 'fill';
 		
 		// Close button:
@@ -164,61 +159,32 @@ var STUB = (function(stub, app, title, undefined) {
 		};
 		palette._close.alignment = 'fill';
 		
-		palette.onShow = function() {
-			palette.location.y = 150; // Adjust window so it's not in the center of the screen.
-			palette.layout.resize();
-		};
+		// palette.onShow = function() {
+		// 	palette.location.y = 150; // Adjust window so it's not in the center of the screen.
+		// 	palette.layout.resize();
+		// };
 		
 		// If need to update the window, like `onClick`, use: `win.layout.layout(true);`.
-		palette.onResizing = function() { this.layout.resize(); };
-		//palette.onShow = function() { win.layout.resize(); }
+		// palette.onResizing = function() { this.layout.resize(); };
+		// palette.onShow = function() { win.layout.resize(); }
 		
 		// Show the palette window:
-		//palette.show();
+		// palette.show();
 		
 		return palette;
 		
-	}
+	};
 	
 	// Your function:
-	function myFunction(parameter) {
+	function myFunction($param) {
 		
-		$.writeln(parameter);
-		$.writeln(doc.layers.length); // ... and called from here.
-		
-	}
-	
-	// GUI constructor:
-	//NS = new Function('this.windowRef = null;');
-	
-	// GUI window:
-	NS.prototype.run = function() {
-		
-		var win;
-		var myListbox;
-		var myButton;
-		
-		// Main window:
-		//win = new Window('palette', TITLE, undefined, { resizeable: true });
-		win = createPalette();
-		
-		// Window Lauch Properties:
-		win.center();
-		win.show();
+		$.writeln($param);
+		$.writeln(_doc.layers.length);
 		
 	}
-	*/
 	
-	//new NS().run();
+	return $ns;
 	
-	//$.writeln('finished');
-	
-	return stub;
-	
-}((STUB || {}), app));
+}((ANIM2 || {}), app));
 
-#target illustrator
-#targetengine main
-
-STUB.init('Test');
-//STUB.public_func('baz');
+ANIM2.init('Test');
