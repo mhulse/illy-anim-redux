@@ -12,11 +12,20 @@ this[NS] = (function($this, $application, $window, undefined) {
 	
 	'use strict';
 	
+	//----------------------------------------------------------------------
+	// Private variables:
+	//----------------------------------------------------------------------
+	
 	var _title;
 	var _doc;
 	var _main;
 	var _btm;
 	var _palette;
+	var _sanitize;
+	
+	//----------------------------------------------------------------------
+	// Public methods:
+	//----------------------------------------------------------------------
 	
 	$this.init = function($title) {
 		
@@ -36,11 +45,24 @@ this[NS] = (function($this, $application, $window, undefined) {
 	};
 	
 	// Your function:
-	$this.myFunction = function($param) {
+	$this.input = function($param1, $param2) {
 		
-		$.writeln('myFunction', $param, _doc.layers.length);
+		$.writeln($param1, $param2)
+		$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
+		
+		return 'foo';
 		
 	};
+	
+	$this.output = function($result, $arg1, $arg2) {
+		
+		$.writeln('result', $result.body, $arg1, $arg2);
+		
+	}
+	
+	//----------------------------------------------------------------------
+	// Private methods:
+	//----------------------------------------------------------------------
 	
 	_main = function() {
 		
@@ -52,36 +74,44 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 	};
 	
-	// BridgeTalk message:
-	_btm = function($name, $params) {
+	/**
+	 * BridgeTalk message.
+	 *
+	 * @param  {string} $name1   BridgeTalk input function.
+	 * @param  {array}  $params1 BridgeTalk input function parameters (array values will be converted to strings).
+	 * @param  {string} $name2   BridgeTalk output function.
+	 * @param  {array}  $params2 BridgeTalk output function parameters.
+	 * @return {void}
+	 */
+	
+	_btm = function($name1, $params1, $name2, $params2) {
 		
-		var params;
 		var talk;
 		
-		// Test type of params:
-		if ($params != undefined) {
+		if ($name1 !== undefined) {
 			
-			if ((typeof $params == 'string') || ($params instanceof String)) {
+			$params1 = _sanitize($params1); // Arguments must be converted to strings.
+			
+			// Make BridgeTalk message:
+			talk = new BridgeTalk;
+			talk.target = 'illustrator';
+			talk.body = (NS + '.' + $name1 + '.apply(null, [' + $params1 + ']);');
+			
+			if ($name2 !== undefined) {
 				
-				params = (($params != undefined) ? ('"' + $params + '"') : '');
-				
-			} else {
-				
-				params = $params;
+				talk.onResult = function($result) {
+					
+					$params2.unshift($result); // Must be unshifted outside of function call (i.e., can't be inline with arguments).
+					
+					$this[$name2]['apply'](null, $params2);
+					
+				};
 				
 			}
 			
-		} else {
-			
-			params = '';
+			talk.send();
 			
 		}
-		
-		// Make BridgeTalk message:
-		talk = new BridgeTalk;
-		talk.target = 'illustrator';
-		talk.body = (NS + '.' + $name + '(' + params + ');');
-		talk.send();
 		
 	};
 	
@@ -94,7 +124,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 		var meta = [
 			'palette {',
 				'preferredSize: [200, ""],',
-				'text: ' + _title + ',',
+				'text: "' + _title + '",',
 				// '_time: EditText { text: "150", },',
 				// 'group: Group {',
 				// 	'panel: Panel {',
@@ -118,7 +148,14 @@ this[NS] = (function($this, $application, $window, undefined) {
 			
 			$.writeln('onClick');
 			
-			_btm('myFunction', 'foo');
+			var param = 'baz';
+			
+			_btm(
+				'input',          // Queries target application and returns a result.
+				[param, 'donny'], // Parameters, as array, to pass `input` function.
+				'output',         // Callback function, called upon successful `BridgeTalk` communication.
+				[param, 'billy']  // Parameters, as array, to pass `output` function.
+			);
 			
 		}
 		palette._start.alignment = 'fill';
@@ -135,8 +172,40 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 	};
 	
+	/**
+	 * Convert array to quoted strings delimited with comma.
+	 *
+	 * @param  {array}  $array Array to be "sanitized".
+	 * @return {string}        String value of sanitized array.
+	 */
+	
+	_sanitize = function($array) {
+		
+		return (($array.length === 0) ? '' : ('"' + $array.join('","') + '"'));
+		
+	}
+	
+	//----------------------------------------------------------------------
+	// Return public API:
+	//----------------------------------------------------------------------
+	
 	return $this;
 	
 }((this[NS] || {}), app, Window));
 
+
+//----------------------------------------------------------------------
+// Initialize plugin:
+//----------------------------------------------------------------------
+
 this[NS].init('Test');
+
+/*
+Output when "Start" button clicked:
+
+Result: undefined
+onClick
+bazdonny
+myFunction5[Layer Layer 1]
+resultfoobazbilly
+*/
