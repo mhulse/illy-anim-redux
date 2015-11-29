@@ -27,6 +27,13 @@ this[NS] = (function($this, $application, $window, undefined) {
 	// Public methods:
 	//----------------------------------------------------------------------
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param  {string} $title Title of palette window.
+	 * @return {void}
+	 */
+	
 	$this.init = function($title) {
 		
 		if ($application.documents.length > 0) {
@@ -44,7 +51,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 	};
 	
-	// Your function:
+	// Test input function:
 	$this.input = function($param1, $param2) {
 		
 		$.writeln($param1, $param2)
@@ -54,6 +61,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 	};
 	
+	// Test output function:
 	$this.output = function($result, $arg1, $arg2) {
 		
 		$.writeln('result', $result.body, $arg1, $arg2);
@@ -63,6 +71,12 @@ this[NS] = (function($this, $application, $window, undefined) {
 	//----------------------------------------------------------------------
 	// Private methods:
 	//----------------------------------------------------------------------
+	
+	/**
+	 * Internal init/constructor.
+	 *
+	 * @return {void}
+	 */
 	
 	_main = function() {
 		
@@ -114,6 +128,12 @@ this[NS] = (function($this, $application, $window, undefined) {
 		}
 		
 	};
+	
+	/**
+	 * Create palette window.
+	 *
+	 * @return {window} Illustrator Window object.
+	 */
 	
 	_palette = function() {
 		
@@ -199,13 +219,3 @@ this[NS] = (function($this, $application, $window, undefined) {
 //----------------------------------------------------------------------
 
 this[NS].init('Test');
-
-/*
-Output when "Start" button clicked:
-
-Result: undefined
-onClick
-bazdonny
-myFunction5[Layer Layer 1]
-resultfoobazbilly
-*/
