@@ -1,3 +1,5 @@
+/* globals $, app, BridgeTalk */
+
 #target illustrator
 #targetengine main
 
@@ -54,8 +56,10 @@ this[NS] = (function($this, $application, $window, undefined) {
 	// Test input function:
 	$this.input = function($param1, $param2) {
 		
-		$.writeln($param1, $param2)
-		$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
+		//$.writeln($param1, $param2);
+		//$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
+		
+		
 		
 		return 'foo';
 		
@@ -64,9 +68,9 @@ this[NS] = (function($this, $application, $window, undefined) {
 	// Test output function:
 	$this.output = function($result, $arg1, $arg2) {
 		
-		$.writeln('result', $result.body, $arg1, $arg2);
+		//$.writeln('result', $result.body, $arg1, $arg2);
 		
-	}
+	};
 	
 	//----------------------------------------------------------------------
 	// Private methods:
@@ -81,6 +85,8 @@ this[NS] = (function($this, $application, $window, undefined) {
 	_main = function() {
 		
 		var palette;
+		
+		_focus();
 		
 		palette = _palette();
 		palette.center();
@@ -107,7 +113,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 			$params1 = _sanitize($params1); // Arguments must be converted to strings.
 			
 			// Make BridgeTalk message:
-			talk = new BridgeTalk;
+			talk = new BridgeTalk();
 			talk.target = 'illustrator';
 			talk.body = (NS + '.' + $name1 + '.apply(null, [' + $params1 + ']);');
 			
@@ -117,7 +123,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 					
 					$params2.unshift($result); // Must be unshifted outside of function call (i.e., can't be inline with arguments).
 					
-					$this[$name2]['apply'](null, $params2);
+					$this[$name2].apply(null, $params2);
 					
 				};
 				
@@ -141,24 +147,12 @@ this[NS] = (function($this, $application, $window, undefined) {
 		var size = 200;
 		
 		// Palette box setup:
-		var meta = [
-			'palette {',
-				'preferredSize: [200, ""],',
-				'text: "' + _title + '",',
-				// '_time: EditText { text: "150", },',
-				// 'group: Group {',
-				// 	'panel: Panel {',
-				// 		'preferredSize: [' + size + ', ""],',
-				// 		'alignChildren: "left",',
-				// 		'_down: RadioButton { text: "Top down", value: "true", },',
-				// 		'_up: RadioButton { text: "Bottom up", },',
-				// 		'_pong: Checkbox { text: "Ping pong", value: "true", },',
-				// 	'},',
-				// '},',
-				'_start: Button { text: "Start" },',
-				'_close: Button { text: "Close" },',
-			'};'
-		].join('\n');
+		var meta = 'palette { \
+			preferredSize: [' + size + ', ""], \
+			text: "' + _title + '", \
+			_start: Button { text: "Start" }, \
+			_close: Button { text: "Close" }, \
+		}';
 		
 		// Instanciate `Window` class with setup from above:
 		var palette = new Window(meta);
@@ -166,7 +160,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 		// Start button:
 		palette._start.onClick = function() {
 			
-			$.writeln('onClick');
+			//$.writeln('onClick');
 			
 			var param = 'baz';
 			
@@ -177,7 +171,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 				[param, 'billy']  // Parameters, as array, to pass `output` function.
 			);
 			
-		}
+		};
 		palette._start.alignment = 'fill';
 		
 		// Close button:
@@ -202,6 +196,21 @@ this[NS] = (function($this, $application, $window, undefined) {
 	_sanitize = function($array) {
 		
 		return (($array.length === 0) ? '' : ('"' + $array.join('","') + '"'));
+		
+	};
+	
+	_focus = function() {
+		
+		var i;
+		var l;
+		
+		for (i = 0, l = _doc.layers.length; i < l; i++) {
+			
+			_doc.layers[i].visible = false;
+			
+		}
+		
+		_doc.activeLayer.visible = true;
 		
 	}
 	
