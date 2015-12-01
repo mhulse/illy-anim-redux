@@ -24,6 +24,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 	var _btm;
 	var _palette;
 	var _sanitize;
+	var _active;
 	
 	//----------------------------------------------------------------------
 	// Public methods:
@@ -59,7 +60,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 		//$.writeln($param1, $param2);
 		//$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
 		
-		
+		$.writeln(_current);
 		
 		return 'foo';
 		
@@ -203,16 +204,25 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 		var i;
 		var l;
+		var current;
 		
 		for (i = 0, l = _doc.layers.length; i < l; i++) {
 			
-			_doc.layers[i].visible = false;
+			current = _doc.layers[i];
+			
+			if (current === _doc.activeLayer) {
+				
+				current.visible = true;
+				
+			} else {
+				
+				current.visible = false;
+				
+			}
 			
 		}
 		
-		_doc.activeLayer.visible = true;
-		
-	}
+	};
 	
 	//----------------------------------------------------------------------
 	// Return public API:
