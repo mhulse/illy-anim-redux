@@ -24,7 +24,13 @@ this[NS] = (function($this, $application, $window, undefined) {
 	var _btm;
 	var _palette;
 	var _sanitize;
-	var _active;
+	var _focus;
+	var _filter;
+	var _activate;
+	var _anim;
+	var _up;
+	var _down;
+	var _control;
 	
 	//----------------------------------------------------------------------
 	// Public methods:
@@ -60,7 +66,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 		//$.writeln($param1, $param2);
 		//$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
 		
-		$.writeln(_current);
+		_focus(true);
 		
 		return 'foo';
 		
@@ -200,29 +206,164 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 	};
 	
-	_focus = function() {
+	/**
+	 * Show "active" layer, hide everything else.
+	 *
+	 * @return {void}
+	 */
+	
+	_focus = function($next) {
 		
+		var filtered = _filter();
+		var layers = filtered.layers;
+		var layer;
+		var active = filtered.active;
+		
+		// Do we need to show the next layer in list?
+		$next = (( !! $next) || false); // If `false`, just deal with the "active" layer.
+		
+		// Loop over layers:
+		for (layer in layers) {
+			
+			// Hide everything:
+			layers[layer].visible = false;
+			
+		}
+		
+		// Loop endlessly:
+		($next && active = (((active + 1) < layers.length) ? (active + 1) : 0));
+		
+		// Show the designated "active" layer:
+		layers[active].visible = true;
+		
+		// ... and mark it as "activeLayer":
+		_doc.activeLayer = layers[active];
+		
+		// Probably not needed, but can't hurt:
+		$application.redraw();
+		
+	};
+	
+	/**
+	 * Get all top-level, non-template, and unlocked layers.
+	 *
+	 * @return {array} Filtered set of active document layers.
+	 */
+	
+	_filter = function() {
+		
+		var result = {};
+		var layer;
 		var i;
-		var l;
-		var current;
+		var il;
+		var count = 0; // Stores the "active" layer key number.
 		
-		for (i = 0, l = _doc.layers.length; i < l; i++) {
+		// Initialize:
+		result.active = 0;
+		result.layers = []
+		
+		// Loop over layers:
+		for (i = 0, il = _doc.layers.length; i < il; i++) {
 			
-			current = _doc.layers[i];
+			// Current layer object in loop:
+			layer = _doc.layers[i];
 			
-			if (current === _doc.activeLayer) {
+			// Skip template and locked layers:
+			if (layer.printable && (layer.locked == false)) { // Template layers are not "printable".
 				
-				current.visible = true;
+				// If it's a part of the non-template and unlocked layers, record the active layer index:
+				((layer === _doc.activeLayer) && (result.active = count));
 				
-			} else {
+				// Since we're looping backwards, add layer object to front of return object:
+				result.layers.push(layer);
 				
-				current.visible = false;
+				// Up the count for use in the next loop iteration:
+				count++;
 				
 			}
 			
 		}
 		
+		return result;
+		
+	}
+	
+	//----------------------------------------------------------------------
+	// Pending functions:
+	//----------------------------------------------------------------------
+	
+	/*
+	_anim = function() {
+		
+		var count = doc.layers.length;
+		var radios = dialog.group.panel;
+		var pong = radios._pong.value;
+		var i;
+		
+		// Hide all layers:
+		clean();
+		
+		// http://stackoverflow.com/a/3586329/922323
+		if ( ! radios._up.value) { // Top down or bottom up?
+			up(count);
+			pong && down(count - 1);
+		} else {
+			down(count);
+			pong && up(count, 1);
+		}
+		
+		// Restore visibility of layers before script was ran:
+		clean(true);
+		
 	};
+	
+	_up = function(count, start) {
+		
+		// Default function param:
+		start = start || 0;
+		
+		for (start; start < count; start++) {
+			control(start); // Count up!
+		}
+		
+	};
+	
+	_down = function(count) {
+		
+		while (count--) {
+			control(count); // Count down!
+		}
+		
+	};
+	
+	_control = function(i) {
+		
+		var layers = doc.layers;
+		var current;
+		var previous;
+		
+		// Skip template layers:
+		if (layers[i].printable) {
+			
+			// Current layer:
+			current = layers[i];
+			
+			// Cache the current layer so we can turn it off in the next loop:
+			previous = current;
+			
+			// Show the current layer:
+			current.visible = true;
+			
+			// Pause the looping to control "frame rate" of "animation":
+			$.setTimeout('redraw', Number(dialog._time.text)); // `EditText` control accepts just text.
+			
+			// We're moving on, hide the layer in preparation for the next loop:
+			previous.visible = false;
+			
+		}
+		
+	};
+	*/
 	
 	//----------------------------------------------------------------------
 	// Return public API:
