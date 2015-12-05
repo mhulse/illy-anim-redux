@@ -150,19 +150,17 @@ this[NS] = (function($this, $application, $window, undefined) {
 	
 	_palette = function() {
 		
-		// Controls width of palette window and children UI elements:
-		var size = 200;
-		
 		// Palette box setup:
 		var meta = 'palette { \
-			preferredSize: [' + size + ', ""], \
-			text: "' + _title + '", \
+			preferredSize: [200, ""], \
 			_start: Button { text: "Start" }, \
 			_close: Button { text: "Close" }, \
 		}';
 		
 		// Instanciate `Window` class with setup from above:
-		var palette = new Window(meta);
+		var palette = new Window(meta, _title, undefined, {
+			resizeable: true
+		});
 		
 		// Start button:
 		palette._start.onClick = function() {
@@ -188,6 +186,9 @@ this[NS] = (function($this, $application, $window, undefined) {
 			
 		};
 		palette._close.alignment = 'fill';
+		
+		// onResize needed on Mac OS X:
+		palette.onResizing = palette.onResize = palette.onShow = function() { this.layout.resize(); } // If need to update the window, like `onClick`, use: `win.layout.layout(true);`.
 		
 		return palette;
 		
