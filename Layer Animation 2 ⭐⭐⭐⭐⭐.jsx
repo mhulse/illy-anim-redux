@@ -152,25 +152,24 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 		// Palette box setup:
 		var meta = 'palette { \
-			orientation: "row", \
-			preferredSize: [300, 130], \
+			orientation: "column", \
 			alignChildren: ["fill", "top"], \
-			margins: 10, \
+			preferredSize: [300, 130], \
+			margins: 15, \
 			group1: Group { \
-				orientation: "column", \
-				_down: RadioButton { text: "Down", value: "true", }, \
-				_up: RadioButton { text: "Up", }, \
+				orientation: "row", \
 				_pong: Checkbox { text: "Ping pong", value: "true", }, \
-				_label1: StaticText { text: "Frames before:" }, \
-				_before: EditText { text: "1", justify: "left" }, \
-				_label2: StaticText { text: "Frames after:" }, \
-				_after: EditText { text: "1", justify: "left" }, \
 			}, \
 			group2: Group { \
-				orientation: "column", \
-				preferredSize: [100, undefined], \
+				orientation: "row", \
 				_start: Button { text: "Start" }, \
-				_close: Button { text: "Close" }, \
+				_close: Button { \
+					text: "Close", \
+					alignment: [ \
+						"right", \
+						"center" \
+					] \
+				}, \
 			} \
 		}';
 		
@@ -292,7 +291,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 				// If it's a part of the non-template and unlocked layers, record the active layer index:
 				((layer === _doc.activeLayer) && (result.active = count));
 				
-				// Since we're looping backwards, add layer object to front of return object:
+				// Add layer object to end of return object:
 				result.layers.push(layer);
 				
 				// Up the count for use in the next loop iteration:
