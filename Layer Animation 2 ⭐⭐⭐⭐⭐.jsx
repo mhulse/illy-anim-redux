@@ -152,9 +152,26 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 		// Palette box setup:
 		var meta = 'palette { \
-			preferredSize: [200, ""], \
-			_start: Button { text: "Start" }, \
-			_close: Button { text: "Close" }, \
+			orientation: "row", \
+			preferredSize: [300, 130], \
+			alignChildren: ["fill", "top"], \
+			margins: 10, \
+			group1: Group { \
+				orientation: "column", \
+				_down: RadioButton { text: "Down", value: "true", }, \
+				_up: RadioButton { text: "Up", }, \
+				_pong: Checkbox { text: "Ping pong", value: "true", }, \
+				_label1: StaticText { text: "Frames before:" }, \
+				_before: EditText { text: "1", justify: "left" }, \
+				_label2: StaticText { text: "Frames after:" }, \
+				_after: EditText { text: "1", justify: "left" }, \
+			}, \
+			group2: Group { \
+				orientation: "column", \
+				preferredSize: [100, undefined], \
+				_start: Button { text: "Start" }, \
+				_close: Button { text: "Close" }, \
+			} \
 		}';
 		
 		// Instanciate `Window` class with setup from above:
@@ -163,7 +180,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 		});
 		
 		// Start button:
-		palette._start.onClick = function() {
+		palette.group2._start.onClick = function() {
 			
 			//$.writeln('onClick');
 			
@@ -177,15 +194,15 @@ this[NS] = (function($this, $application, $window, undefined) {
 			);
 			
 		};
-		palette._start.alignment = 'fill';
+		palette.group2._start.alignment = 'fill';
 		
 		// Close button:
-		palette._close.onClick = function() {
+		palette.group2._close.onClick = function() {
 			
 			palette.close();
 			
 		};
-		palette._close.alignment = 'fill';
+		palette.group2._close.alignment = 'fill';
 		
 		// onResize needed on Mac OS X:
 		palette.onResizing = palette.onResize = palette.onShow = function() { this.layout.resize(); } // If need to update the window, like `onClick`, use: `win.layout.layout(true);`.
