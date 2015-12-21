@@ -18,66 +18,10 @@ this[NS] = (function($this, $application, $window, undefined) {
 	// Private variables:
 	//----------------------------------------------------------------------
 	
-	var _title;
-	var _doc;
-	var _main;
-	var _btm;
-	var _palette;
-	var _sanitize;
-	var _focus;
-	var _filter;
-	var _activate;
-	var _anim;
-	var _up;
-	var _down;
-	var _control;
-	
-	//----------------------------------------------------------------------
-	// Public methods:
-	//----------------------------------------------------------------------
-	
-	/**
-	 * Constructor.
-	 *
-	 * @param  {string} $title Title of palette window.
-	 * @return {void}
-	 */
-	
-	$this.init = function($title) {
-		
-		if ($application.documents.length > 0) {
-			
-			_title = $title;
-			_doc = $application.activeDocument;
-			
-			_main(); // Only run if there's at least one document open.
-			
-		} else {
-			
-			$window.alert('You must open at least one document.');
-			
-		}
-		
-	};
-	
-	// Test input function:
-	$this.input = function($param1, $param2) {
-		
-		//$.writeln($param1, $param2);
-		//$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
-		
-		_focus(true);
-		
-		return 'foo';
-		
-	};
-	
-	// Test output function:
-	$this.output = function($result, $arg1, $arg2) {
-		
-		//$.writeln('result', $result.body, $arg1, $arg2);
-		
-	};
+	var _private = {};
+	var _doc = null;
+	var _ref = null;
+	var _title = '';
 	
 	//----------------------------------------------------------------------
 	// Private methods:
@@ -89,15 +33,13 @@ this[NS] = (function($this, $application, $window, undefined) {
 	 * @return {void}
 	 */
 	
-	_main = function() {
+	_private.main = function() {
 		
-		var palette;
+		_ref = _private.palette();
+		_ref.center();
+		_ref.show();
 		
-		_focus();
-		
-		palette = _palette();
-		palette.center();
-		palette.show();
+		_private.focus();
 		
 	};
 	
@@ -111,13 +53,13 @@ this[NS] = (function($this, $application, $window, undefined) {
 	 * @return {void}
 	 */
 	
-	_btm = function($name1, $params1, $name2, $params2) {
+	_private.btm = function($name1, $params1, $name2, $params2) {
 		
 		var talk;
 		
 		if ($name1 !== undefined) {
 			
-			$params1 = _sanitize($params1); // Arguments must be converted to strings.
+			$params1 = _private.sanitize($params1); // Arguments must be converted to strings.
 			
 			// Make BridgeTalk message:
 			talk = new BridgeTalk();
@@ -148,7 +90,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 	 * @return {window} Illustrator Window object.
 	 */
 	
-	_palette = function() {
+	_private.palette = function() {
 		
 		// Palette box setup:
 		var meta = 'palette { \
@@ -158,18 +100,17 @@ this[NS] = (function($this, $application, $window, undefined) {
 			margins: 15, \
 			group1: Group { \
 				orientation: "row", \
-				_pong: Checkbox { text: "Ping pong", value: "true", }, \
+				$$down: RadioButton { text: "Top down", value: "true" }, \
+				$$up: RadioButton { text: "Bottom up" }, \
+				$$pong: Checkbox { text: "Ping pong" } \
 			}, \
-			group2: Group { \
-				orientation: "row", \
-				_start: Button { text: "Start" }, \
-				_close: Button { \
-					text: "Close", \
-					alignment: [ \
-						"right", \
-						"center" \
-					] \
-				}, \
+			$$start: Button { text: "Start" }, \
+			$$close: Button { \
+				text: "Close", \
+				alignment: [ \
+					"right", \
+					"center" \
+				] \
 			} \
 		}';
 		
@@ -179,13 +120,13 @@ this[NS] = (function($this, $application, $window, undefined) {
 		});
 		
 		// Start button:
-		palette.group2._start.onClick = function() {
+		palette.$$start.onClick = function() {
 			
 			//$.writeln('onClick');
 			
 			var param = 'baz';
 			
-			_btm(
+			_private.btm(
 				'input',          // Queries target application and returns a result.
 				[param, 'donny'], // Parameters, as array, to pass `input` function.
 				'output',         // Callback function, called upon successful `BridgeTalk` communication.
@@ -193,15 +134,15 @@ this[NS] = (function($this, $application, $window, undefined) {
 			);
 			
 		};
-		palette.group2._start.alignment = 'fill';
+		//palette.$$start.alignment = 'fill';
 		
 		// Close button:
-		palette.group2._close.onClick = function() {
+		palette.$$close.onClick = function() {
 			
 			palette.close();
 			
 		};
-		palette.group2._close.alignment = 'fill';
+		//palette.$$close.alignment = 'fill';
 		
 		// onResize needed on Mac OS X:
 		palette.onResizing = palette.onResize = palette.onShow = function() { this.layout.resize(); } // If need to update the window, like `onClick`, use: `win.layout.layout(true);`.
@@ -214,10 +155,10 @@ this[NS] = (function($this, $application, $window, undefined) {
 	 * Convert array to quoted strings delimited with comma.
 	 *
 	 * @param  {array}  $array Array to be "sanitized".
-	 * @return {string}        String value of sanitized array.
+	 * @return {string} String value of sanitized array.
 	 */
 	
-	_sanitize = function($array) {
+	_private.sanitize = function($array) {
 		
 		return (($array.length === 0) ? '' : ('"' + $array.join('","') + '"'));
 		
@@ -229,12 +170,15 @@ this[NS] = (function($this, $application, $window, undefined) {
 	 * @return {void}
 	 */
 	
-	_focus = function($next) {
+	_private.focus = function($next) {
 		
-		var filtered = _filter();
+		var radios = _ref.group1;
+		var filtered = _private.filter();
 		var layers = filtered.layers;
+		var count = layers.length;
 		var layer;
 		var active = filtered.active;
+		var method;
 		
 		// Do we need to show the next layer in list?
 		$next = (( !! $next) || false); // If `false`, just deal with the "active" layer.
@@ -247,8 +191,31 @@ this[NS] = (function($this, $application, $window, undefined) {
 			
 		}
 		
-		// Loop endlessly:
-		($next && active = (((active + 1) < layers.length) ? (active + 1) : 0));
+		if ($next) {
+			
+			if (radios.$$pong.value) {
+				
+				if (active == 0) {
+					
+					radios.$$down.value = true;
+					
+				}
+				
+				if ((active + 1) == count) {
+					
+					radios.$$up.value = true;
+					
+				}
+				
+			}
+			
+			// Going up or down?
+			method = (radios.$$down.value) ? 'down' : 'up';
+			
+			// Animate:
+			active = _private[method](active, count);
+			
+		}
 		
 		// Show the designated "active" layer:
 		layers[active].visible = true;
@@ -261,13 +228,25 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 	};
 	
+	_private.down = function($active, $count) {
+		
+		return ((($active + 1) < $count) ? ($active + 1) : 0);
+		
+	};
+	
+	_private.up = function($active, $count) {
+		
+		return ((($active - 1) < 0) ? ($count - 1) : ($active - 1));
+		
+	};
+	
 	/**
 	 * Get all top-level, non-template, and unlocked layers.
 	 *
 	 * @return {array} Filtered set of active document layers.
 	 */
 	
-	_filter = function() {
+	_private.filter = function() {
 		
 		var result = {};
 		var layer;
@@ -303,84 +282,54 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 		return result;
 		
-	}
+	};
 	
 	//----------------------------------------------------------------------
-	// Pending functions:
+	// Public methods:
 	//----------------------------------------------------------------------
 	
-	/*
-	_anim = function() {
+	/**
+	 * Constructor.
+	 *
+	 * @param  {string} $title Title of palette window.
+	 * @return {void}
+	 */
+	
+	$this.init = function($title) {
 		
-		var count = doc.layers.length;
-		var radios = dialog.group.panel;
-		var pong = radios._pong.value;
-		var i;
-		
-		// Hide all layers:
-		clean();
-		
-		// http://stackoverflow.com/a/3586329/922323
-		if ( ! radios._up.value) { // Top down or bottom up?
-			up(count);
-			pong && down(count - 1);
+		if ($application.documents.length > 0) {
+			
+			_title = $title;
+			_doc = $application.activeDocument;
+			
+			_private.main(); // Only run if there's at least one document open.
+			
 		} else {
-			down(count);
-			pong && up(count, 1);
-		}
-		
-		// Restore visibility of layers before script was ran:
-		clean(true);
-		
-	};
-	
-	_up = function(count, start) {
-		
-		// Default function param:
-		start = start || 0;
-		
-		for (start; start < count; start++) {
-			control(start); // Count up!
+			
+			$window.alert('You must open at least one document.');
+			
 		}
 		
 	};
 	
-	_down = function(count) {
+	// Test input function:
+	$this.input = function($param1, $param2) {
 		
-		while (count--) {
-			control(count); // Count down!
-		}
+		//$.writeln($param1, $param2);
+		//$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
+		
+		_private.focus(true);
+		
+		return 'foo';
 		
 	};
 	
-	_control = function(i) {
+	// Test output function:
+	$this.output = function($result, $arg1, $arg2) {
 		
-		var layers = doc.layers;
-		var current;
-		var previous;
-		
-		// Skip template layers:
-		if (layers[i].printable) {
-			
-			// Current layer:
-			current = layers[i];
-			
-			// Cache the current layer so we can turn it off in the next loop:
-			previous = current;
-			
-			// Show the current layer:
-			current.visible = true;
-			
-			// Pause the looping to control "frame rate" of "animation":
-			$.setTimeout('redraw', Number(dialog._time.text)); // `EditText` control accepts just text.
-			
-			// We're moving on, hide the layer in preparation for the next loop:
-			previous.visible = false;
-			
-		}
+		//$.writeln('result', $result.body, $arg1, $arg2);
 		
 	};
-	*/
 	
 	//----------------------------------------------------------------------
 	// Return public API:
