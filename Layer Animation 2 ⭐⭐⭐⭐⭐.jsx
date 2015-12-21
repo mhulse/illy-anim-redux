@@ -104,23 +104,26 @@ this[NS] = (function($this, $application, $window, undefined) {
 				$$up: RadioButton { text: "Bottom up" }, \
 				$$pong: Checkbox { text: "Ping pong" } \
 			}, \
-			$$start: Button { text: "Start" }, \
-			$$close: Button { \
-				text: "Close", \
-				alignment: [ \
-					"right", \
-					"center" \
-				] \
+			group2: Group { \
+				orientation: "row", \
+				$$next: Checkbox { text: "Toggle next" }, \
+				$$prev: Checkbox { text: "Toggle previous" } \
+			}, \
+			group3: Group { \
+				alignChildren: ["fill", "top"], \
+				orientation: "row", \
+				$$start: Button { text: "Start" }, \
+				$$close: Button { text: "Close" } \
 			} \
 		}';
 		
 		// Instanciate `Window` class with setup from above:
 		var palette = new Window(meta, _title, undefined, {
-			resizeable: true
+			//option: value
 		});
 		
 		// Start button:
-		palette.$$start.onClick = function() {
+		palette.group3.$$start.onClick = function() {
 			
 			//$.writeln('onClick');
 			
@@ -134,18 +137,13 @@ this[NS] = (function($this, $application, $window, undefined) {
 			);
 			
 		};
-		//palette.$$start.alignment = 'fill';
 		
 		// Close button:
-		palette.$$close.onClick = function() {
+		palette.group3.$$close.onClick = function() {
 			
 			palette.close();
 			
 		};
-		//palette.$$close.alignment = 'fill';
-		
-		// onResize needed on Mac OS X:
-		palette.onResizing = palette.onResize = palette.onShow = function() { this.layout.resize(); } // If need to update the window, like `onClick`, use: `win.layout.layout(true);`.
 		
 		return palette;
 		
@@ -174,10 +172,10 @@ this[NS] = (function($this, $application, $window, undefined) {
 		
 		var radios = _ref.group1;
 		var filtered = _private.filter();
+		var active = filtered.active;
 		var layers = filtered.layers;
 		var count = layers.length;
 		var layer;
-		var active = filtered.active;
 		var method;
 		
 		// Do we need to show the next layer in list?
@@ -279,6 +277,8 @@ this[NS] = (function($this, $application, $window, undefined) {
 			}
 			
 		}
+		
+		//$.writeln(_ref.group2.$$next.value, _ref.group2.$$prev.value)
 		
 		return result;
 		
