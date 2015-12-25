@@ -10,7 +10,7 @@
 
 var NS = 'ANIM2';
 
-this[NS] = (function($this, $application, $window, undefined) {
+this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	'use strict';
 	
@@ -72,7 +72,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 					
 					$params2.unshift($result); // Must be unshifted outside of function call (i.e., can't be inline with arguments).
 					
-					$this[$name2].apply(null, $params2);
+					_$this[$name2].apply(null, $params2);
 					
 				};
 				
@@ -96,20 +96,15 @@ this[NS] = (function($this, $application, $window, undefined) {
 		var meta = 'palette { \
 			orientation: "column", \
 			alignChildren: ["fill", "top"], \
-			preferredSize: [300, 130], \
 			margins: 15, \
 			group1: Group { \
 				orientation: "row", \
 				$$down: RadioButton { text: "Top down", value: "true" }, \
 				$$up: RadioButton { text: "Bottom up" }, \
 				$$pong: Checkbox { text: "Ping pong" } \
+				$$selected: Checkbox { text: "Use selected" } \
 			}, \
 			group2: Group { \
-				orientation: "row", \
-				$$next: Checkbox { text: "Toggle next" }, \
-				$$prev: Checkbox { text: "Toggle previous" } \
-			}, \
-			group3: Group { \
 				alignChildren: ["fill", "top"], \
 				orientation: "row", \
 				$$start: Button { text: "Start" }, \
@@ -122,10 +117,16 @@ this[NS] = (function($this, $application, $window, undefined) {
 			//option: value
 		});
 		
-		// Start button:
-		palette.group3.$$start.onClick = function() {
+		// Selected checkbox:
+		palette.group1.$$selected.onClick = function() {
 			
-			//$.writeln('onClick');
+			// If checked, load, otherwise, unload the temporary action file:
+			(this.value) ? _private.load() : _private.unload();
+			
+		};
+		
+		// Start button:
+		palette.group2.$$start.onClick = function() {
 			
 			var param = 'baz';
 			
@@ -138,8 +139,11 @@ this[NS] = (function($this, $application, $window, undefined) {
 			
 		};
 		
-		// Close button:
-		palette.group3.$$close.onClick = function() {
+		// Close and/or palette UI close buttons:
+		palette.group2.$$close.onClick = palette.onClose = function() {
+			
+			// Make sure to clean up actions:
+			_private.unload();
 			
 			palette.close();
 			
@@ -189,18 +193,24 @@ this[NS] = (function($this, $application, $window, undefined) {
 			
 		}
 		
+		// Next layer?
 		if ($next) {
 			
+			// Pong?
 			if (radios.$$pong.value) {
 				
+				// Going down?
 				if (active == 0) {
 					
+					// Yup, so select the palette's "down" radio button:
 					radios.$$down.value = true;
 					
 				}
 				
+				// Going up?
 				if ((active + 1) == count) {
 					
+					// Select the "up" radio button:
 					radios.$$up.value = true;
 					
 				}
@@ -222,15 +232,31 @@ this[NS] = (function($this, $application, $window, undefined) {
 		_doc.activeLayer = layers[active];
 		
 		// Probably not needed, but can't hurt:
-		$application.redraw();
+		_$application.redraw();
 		
 	};
+	
+	/**
+	 * Determine "downwards" layer to show.
+	 *
+	 * @param {integer} $active Key of active layer.
+	 * @param {integer} $count Layer length.
+	 * @return {integer} Key of layer to show.
+	 */
 	
 	_private.down = function($active, $count) {
 		
 		return ((($active + 1) < $count) ? ($active + 1) : 0);
 		
 	};
+	
+	/**
+	 * Determine "upwards" layer to show.
+	 *
+	 * @param {integer} $active Key of active layer.
+	 * @param {integer} $count Layer length.
+	 * @return {integer} Key of layer to show.
+	 */
 	
 	_private.up = function($active, $count) {
 		
@@ -251,6 +277,14 @@ this[NS] = (function($this, $application, $window, undefined) {
 		var i;
 		var il;
 		var count = 0; // Stores the "active" layer key number.
+		var selected = _ref.group1.$$selected.value;
+		
+		if (selected) {
+			
+			// Make all selected layers visible and hide the rest:
+			_private.run();
+			
+		}
 		
 		// Initialize:
 		result.active = 0;
@@ -263,7 +297,15 @@ this[NS] = (function($this, $application, $window, undefined) {
 			layer = _doc.layers[i];
 			
 			// Skip template and locked layers:
-			if (layer.printable && (layer.locked == false)) { // Template layers are not "printable".
+			if (
+				layer.printable // Template layers are not "printable".
+				&&
+				( ! layer.locked)
+				&&
+				(
+					(selected ? layer.visible : true) // Only check for visibility if `selected` is true.
+				)
+			) {
 				
 				// If it's a part of the non-template and unlocked layers, record the active layer index:
 				((layer === _doc.activeLayer) && (result.active = count));
@@ -278,11 +320,137 @@ this[NS] = (function($this, $application, $window, undefined) {
 			
 		}
 		
-		//$.writeln(_ref.group2.$$next.value, _ref.group2.$$prev.value)
-		
 		return result;
 		
 	};
+	
+	_private.load = function() {
+		
+		// Action string:
+		var action = [
+			'/version 3',
+			'/name [',
+				'4', // Group name character count.
+				'74656d70', // Group name as a hash.
+			']',
+			'/isOpen 0',
+			'/actionCount 1',
+			'/action-1 {',
+				'/name [',
+					'4', // Action name character count.
+					'74656d70', // Action name as a hash.
+				']',
+				'/keyIndex 0',
+				'/colorIndex 0',
+				'/isOpen 0',
+				'/eventCount 1',
+				'/event-1 {',
+					'/useRulersIn1stQuadrant 0',
+					'/internalName (ai_plugin_Layer)',
+					'/localizedName [',
+						'5',
+						'4c61796572',
+					']',
+					'/isOpen 0',
+					'/isOn 1',
+					'/hasDialog 0',
+					'/parameterCount 3',
+					'/parameter-1 {',
+						'/key 1836411236',
+						'/showInPalette -1',
+						'/type (integer)',
+						'/value 7',
+					'}',
+					'/parameter-2 {',
+						'/key 1937008996',
+						'/showInPalette -1',
+						'/type (integer)',
+						'/value 23',
+					'}',
+					'/parameter-3 {',
+						'/key 1851878757',
+						'/showInPalette -1',
+						'/type (ustring)',
+						'/value [',
+							'11',
+							'48696465204f7468657273',
+						']',
+					'}',
+				'}',
+			'}'
+		].join('\n');
+		
+		// Create and load:
+		_private.create(action);
+		
+	}
+	
+	/**
+	 * Create action file and load it into the actions palette.
+	 *
+	 * @param {string} $action Action string to create and load.
+	 * @return {void}
+	 */
+	
+	_private.create = function($action) {
+		
+		var aia = new File('~/temp.aia'); // Temporary file created in home directory.
+		
+		// Open and write the action string:
+		aia.open('w');
+		aia.write($action);
+		aia.close();
+		
+		// Load action into actions palette:
+		_$application.loadAction(aia);
+		
+		// Remove the temporary file:
+		aia.remove();
+		
+	}
+	
+	/**
+	 * Removes action from actions palette.
+	 *
+	 * @return {void}
+	 */
+	
+	_private.unload = function() {
+		
+		_$application.unloadAction('temp', ''); // Action Set Name.
+		
+	}
+	
+	/**
+	 * Runs temporary layer action.
+	 *
+	 * @return {void}
+	 */
+	
+	_private.run = function() {
+		
+		var level = _$application.userInteractionLevel; // Gets the current user interaction level.
+		var i;
+		var il;
+		
+		// Overrides the current user interaction level:
+		_$application.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
+		
+		// Action requires all layers to be visible before it can function:
+		for (i = 0, il = _doc.layers.length; i < il; i++) {
+			
+			// Make all layers visible:
+			_doc.layers[i].visible = true;
+			
+		}
+		
+		// Run the temporary action:
+		_$application.doScript('temp', 'temp', false); // Action Name, Action Set Name.
+		
+		// Restore the user interaction level:
+		_$application.userInteractionLevel = level;
+		
+	}
 	
 	//----------------------------------------------------------------------
 	// Public methods:
@@ -295,25 +463,29 @@ this[NS] = (function($this, $application, $window, undefined) {
 	 * @return {void}
 	 */
 	
-	$this.init = function($title) {
+	_$this.init = function($title) {
 		
-		if ($application.documents.length > 0) {
+		// Open document(s)?
+		if (_$application.documents.length > 0) {
 			
+			// Yup, so setup local globals:
 			_title = $title;
-			_doc = $application.activeDocument;
+			_doc = _$application.activeDocument;
 			
+			// Begin the program:
 			_private.main(); // Only run if there's at least one document open.
 			
 		} else {
 			
-			$window.alert('You must open at least one document.');
+			// Nope, let the user know what they did wrong:
+			_$window.alert('You must open at least one document.');
 			
 		}
 		
 	};
 	
 	// Test input function:
-	$this.input = function($param1, $param2) {
+	_$this.input = function($param1, $param2) {
 		
 		//$.writeln($param1, $param2);
 		//$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
@@ -325,7 +497,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 	};
 	
 	// Test output function:
-	$this.output = function($result, $arg1, $arg2) {
+	_$this.output = function($result, $arg1, $arg2) {
 		
 		//$.writeln('result', $result.body, $arg1, $arg2);
 		
@@ -335,7 +507,7 @@ this[NS] = (function($this, $application, $window, undefined) {
 	// Return public API:
 	//----------------------------------------------------------------------
 	
-	return $this;
+	return _$this;
 	
 }((this[NS] || {}), app, Window));
 
@@ -344,4 +516,4 @@ this[NS] = (function($this, $application, $window, undefined) {
 // Initialize plugin:
 //----------------------------------------------------------------------
 
-this[NS].init('Test');
+this[NS].init('Animate Layers II'); // Begin program and pass title of palette.
