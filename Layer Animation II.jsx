@@ -117,7 +117,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				alignChildren: ["fill", "top"], \
 				orientation: "row", \
 				$$start: Button { text: "Start" }, \
-				$$close: Button { text: "Close" } \
 			} \
 		}';
 		
@@ -143,7 +142,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		};
 		
 		// Close and/or palette UI close buttons:
-		palette.group2.$$close.onClick = palette.onClose = function() {
+		palette.onClose = function() {
 			
 			// Make sure to clean up actions:
 			_private.unload();
