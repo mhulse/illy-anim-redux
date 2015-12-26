@@ -8,3 +8,8 @@ My [first layer animation script](https://github.com/pixelfoot/illy-anim) stoppe
 
 ## Installation
 
+Use the below single-line bash command(s) to install this script into your Illustrator `Scripts` folder.
+
+```bash
+$ cd /Applications/Adobe\ Illustrator\ CC\ 2015/Presets.localized/en_US/Scripts && mkdir -p @mhulse && cd @mhulse && curl -#L https://github.com/mhulse/illy-anim-redux/tarball/master | tar -xzv --strip-components 1 --include=*/Layer\ Animation\ II\.jsx --exclude=*/**/*
+```
