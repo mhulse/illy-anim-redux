@@ -1,9 +1,10 @@
-# Illustrator Layer Animation
+# Illustrator Layer Animation, redux!
 
-Version #2. [Version #1 can be found here](https://github.com/pixelfoot/illy-anim).
+**[ExtendScript](http://en.wikipedia.org/wiki/ExtendScript) (`.jsx`) used to animate Adobe Illustrator’s layers in order to preview sequenced layer frames for animation.**
 
-## Development
+## Why “redux”?
 
-Open script in ESTK, and Sublime Text. Edit in ST3 and compile/run in ESTK.
+My [first layer animation script](https://github.com/pixelfoot/illy-anim) stopped working [after an OS X El Capitan upgrade](https://forums.adobe.com/message/8206533), so … I ended up writing [Layer Animation II.jsx](Layer Animation II.jsx).
 
-More info coming soon.
+## Installation
+
