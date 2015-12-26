@@ -1,9 +1,14 @@
-/* globals $, app, BridgeTalk */
+/* jshint -W043, laxbreak:true, -W030 */
+/* globals app, BridgeTalk, UserInteractionLevel */
 
+// jshint ignore:start
 #target illustrator
 #targetengine main
+// jshint ignore:end
 
 /**
+ * @@@BUILDINFO@@@ Layer Animation II.jsx !Version! Fri Dec 25 2015 22:47:45 GMT-0800
+ *
  * @see https://gist.github.com/mhulse/aac5d6782868b612320b
  * @see https://gist.github.com/mhulse/eb0ffb2bd365975632d2
  */
@@ -44,7 +49,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	};
 	
 	/**
-	 * BridgeTalk message.
+	 * Boilerplate used to create a “BridgeTalk Message”.
 	 *
 	 * @param  {string} $name1   BridgeTalk input function.
 	 * @param  {array}  $params1 BridgeTalk input function parameters (array values will be converted to strings).
@@ -56,6 +61,10 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	_private.btm = function($name1, $params1, $name2, $params2) {
 		
 		var talk;
+		
+		// Some defaults:
+		$params1 = ($params1 instanceof Array) ? $params1 : [];
+		$params2 = ($params2 instanceof Array) ? $params2 : [];
 		
 		if ($name1 !== undefined) {
 			
@@ -70,7 +79,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				
 				talk.onResult = function($result) {
 					
-					$params2.unshift($result); // Must be unshifted outside of function call (i.e., can't be inline with arguments).
+					$params2.unshift($result); // Must be unshifted outside of function call (i.e., can't be inline with arguments in call to `apply()` below).
 					
 					_$this[$name2].apply(null, $params2);
 					
@@ -128,14 +137,8 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		// Start button:
 		palette.group2.$$start.onClick = function() {
 			
-			var param = 'baz';
-			
-			_private.btm(
-				'input',          // Queries target application and returns a result.
-				[param, 'donny'], // Parameters, as array, to pass `input` function.
-				'output',         // Callback function, called upon successful `BridgeTalk` communication.
-				[param, 'billy']  // Parameters, as array, to pass `output` function.
-			);
+			// For more options, see: https://gist.github.com/mhulse/efd706ab3252b9cb6a25
+			_private.btm('update'); // Queries target application and returns a result.
 			
 		};
 		
@@ -156,12 +159,13 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	/**
 	 * Convert array to quoted strings delimited with comma.
 	 *
-	 * @param  {array}  $array Array to be "sanitized".
+	 * @param {array} $array Array to be "sanitized".
 	 * @return {string} String value of sanitized array.
 	 */
 	
 	_private.sanitize = function($array) {
 		
+		// If not an array, or if array is empty, then return an empty string. Otherwise, return quoted strings:
 		return (($array.length === 0) ? '' : ('"' + $array.join('","') + '"'));
 		
 	};
@@ -188,8 +192,13 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		// Loop over layers:
 		for (layer in layers) {
 			
-			// Hide everything:
-			layers[layer].visible = false;
+			// https://jslinterrors.com/the-body-of-a-for-in-should-be-wrapped-in-an-if-statement
+			if (layers.hasOwnProperty(layer)) {
+				
+				// Hide everything:
+				layers[layer].visible = false;
+				
+			}
 			
 		}
 		
@@ -200,7 +209,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			if (radios.$$pong.value) {
 				
 				// Going down?
-				if (active == 0) {
+				if (active === 0) {
 					
 					// Yup, so select the palette's "down" radio button:
 					radios.$$down.value = true;
@@ -288,7 +297,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		// Initialize:
 		result.active = 0;
-		result.layers = []
+		result.layers = [];
 		
 		// Loop over layers:
 		for (i = 0, il = _doc.layers.length; i < il; i++) {
@@ -383,7 +392,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		// Create and load:
 		_private.create(action);
 		
-	}
+	};
 	
 	/**
 	 * Create action file and load it into the actions palette.
@@ -407,7 +416,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		// Remove the temporary file:
 		aia.remove();
 		
-	}
+	};
 	
 	/**
 	 * Removes action from actions palette.
@@ -419,7 +428,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 		_$application.unloadAction('temp', ''); // Action Set Name.
 		
-	}
+	};
 	
 	/**
 	 * Runs temporary layer action.
@@ -450,7 +459,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		// Restore the user interaction level:
 		_$application.userInteractionLevel = level;
 		
-	}
+	};
 	
 	//----------------------------------------------------------------------
 	// Public methods:
@@ -484,22 +493,15 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 	};
 	
-	// Test input function:
-	_$this.input = function($param1, $param2) {
-		
-		//$.writeln($param1, $param2);
-		//$.writeln('myFunction', _doc.layers.length, _doc.activeLayer);
+	/**
+	 * Re-starts script (called from BridgeTalk).
+	 *
+	 * @return {void}
+	 */
+	
+	_$this.update = function() {
 		
 		_private.focus(true);
-		
-		return 'foo';
-		
-	};
-	
-	// Test output function:
-	_$this.output = function($result, $arg1, $arg2) {
-		
-		//$.writeln('result', $result.body, $arg1, $arg2);
 		
 	};
 	
