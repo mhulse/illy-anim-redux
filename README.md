@@ -23,6 +23,17 @@ Using the radio and check box options, click the `Start` button to animate throu
 
 More information coming soon.
 
+## Big ups …
+
+… to **all of the awesome and helpful peeps** on the [Adobe Illustrator scripting forums](https://forums.adobe.com/community/illustrator/illustrator_scripting), especially:
+
+* [@Silly-V](https://github.com/Silly-V) / [Silly-V](https://forums.adobe.com/people/Silly-V)
+* [@qwertyfly](https://github.com/Qwertyfly) / [Qwertyfly...](https://forums.adobe.com/people/Qwertyfly...)
+* [@ten-A](https://github.com/ten-A) / [Ten A](https://forums.adobe.com/people/Ten A)
+* [williamadowling](https://forums.adobe.com/people/williamadowling)
+
+<img class="emoji" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png" align="absmiddle">
+
 ---
 
 Copyright © 2015-2016 [Michael Hulse](http://mky.io).
