@@ -18,7 +18,9 @@ Use the below single-line Unix bash command(s) to quickly install this script in
 INSTALL="/Applications/Adobe Illustrator CC 2015/Presets.localized/en_US/Scripts/@mhulse"; mkdir -pv "$INSTALL" && curl -#L https://github.com/mhulse/illy-anim-redux/tarball/master | tar -xzv --strip-components 1 --include="*/Layer Animation II.jsx" --exclude=*/**/* -C "$INSTALL";
 ```
 
-Alternatively, you can dowload [`Layer Animation II.jsx`](Layer Animation II.jsx) into your Illustrator Scripts folder, located in the `/lllustrator CC/Presets` folder in your `lllustrator CC` installation directory. The script’s filename, minus the file extension, appears in the Scripts menu.
+Alternatively, you can dowload [`Layer Animation II.jsx`](Layer Animation II.jsx) into your Illustrator `Scripts` folder, located in the `/lllustrator CC/Presets` folder in your `lllustrator CC` installation directory.
+
+The script’s filename, minus the file extension, will appear in the Scripts menu.
 
 ## Usage
 
