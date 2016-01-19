@@ -147,8 +147,6 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			// Make sure to clean up actions:
 			_private.unload();
 			
-			palette.close();
-			
 		};
 		
 		return palette;
