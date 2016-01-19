@@ -111,7 +111,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				$$down: RadioButton { text: "Top down", value: "true" }, \
 				$$up: RadioButton { text: "Bottom up" }, \
 				$$pong: Checkbox { text: "Ping pong" } \
-				$$selected: Checkbox { text: "Use selected" } \
+				$$selected: Checkbox { text: "Use selected layers" } \
 			}, \
 			group2: Group { \
 				alignChildren: ["fill", "top"], \
