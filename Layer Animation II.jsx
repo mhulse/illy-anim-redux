@@ -308,9 +308,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				&&
 				( ! layer.locked)
 				&&
-				(
-					(selected ? layer.visible : true) // Only check for visibility if `selected` is true.
-				)
+				(selected ? layer.visible : true) // Only check for visibility if `selected` is true.
 			) {
 				
 				// If it's a part of the non-template and unlocked layers, record the active layer index:
