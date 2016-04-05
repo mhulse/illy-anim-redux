@@ -7,7 +7,7 @@
 // jshint ignore:end
 
 /**
- * @@@BUILDINFO@@@ Layer Animation II.jsx !Version! Fri Dec 25 2015 22:47:45 GMT-0800
+ * @@@BUILDINFO@@@ Layer Animation II.jsx !Version! Mon Apr 04 2016 22:54:52 GMT-0700
  *
  * @see https://gist.github.com/mhulse/aac5d6782868b612320b
  * @see https://gist.github.com/mhulse/eb0ffb2bd365975632d2
