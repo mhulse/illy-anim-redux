@@ -108,15 +108,15 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			margins: 15, \
 			group1: Group { \
 				orientation: "row", \
-				$$down: RadioButton { text: "Top down", value: "true" }, \
-				$$up: RadioButton { text: "Bottom up" }, \
-				$$pong: Checkbox { text: "Ping pong" }, \
-				$$selected: Checkbox { text: "Use selected layers" } \
+				down: RadioButton { text: "Top down", value: "true" }, \
+				up: RadioButton { text: "Bottom up" }, \
+				pong: Checkbox { text: "Ping pong" }, \
+				selected: Checkbox { text: "Use selected layers" } \
 			}, \
 			group2: Group { \
 				alignChildren: ["fill", "top"], \
 				orientation: "row", \
-				$$start: Button { text: "Start" } \
+				start: Button { text: "Start" } \
 			} \
 		}';
 		
@@ -126,7 +126,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		});
 		
 		// Selected checkbox:
-		palette.group1.$$selected.onClick = function() {
+		palette.group1.selected.onClick = function() {
 			
 			// If checked, load, otherwise, unload the temporary action file:
 			(this.value) ? _private.load() : _private.unload();
@@ -134,7 +134,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		};
 		
 		// Start button:
-		palette.group2.$$start.onClick = function() {
+		palette.group2.start.onClick = function() {
 			
 			// For more options, see: https://gist.github.com/mhulse/efd706ab3252b9cb6a25
 			_private.btm('update'); // Queries target application and returns a result.
@@ -203,13 +203,13 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		if ($next) {
 			
 			// Pong?
-			if (radios.$$pong.value) {
+			if (radios.pong.value) {
 				
 				// Going down?
 				if (active === 0) {
 					
 					// Yup, so select the palette's "down" radio button:
-					radios.$$down.value = true;
+					radios.down.value = true;
 					
 				}
 				
@@ -217,14 +217,14 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				if ((active + 1) == count) {
 					
 					// Select the "up" radio button:
-					radios.$$up.value = true;
+					radios.up.value = true;
 					
 				}
 				
 			}
 			
 			// Going up or down?
-			method = (radios.$$down.value) ? 'down' : 'up';
+			method = (radios.down.value) ? 'down' : 'up';
 			
 			// Animate:
 			active = _private[method](active, count);
@@ -283,7 +283,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		var i;
 		var il;
 		var count = 0; // Stores the "active" layer key number.
-		var selected = _ref.group1.$$selected.value;
+		var selected = _ref.group1.selected.value;
 		
 		if (selected) {
 			
