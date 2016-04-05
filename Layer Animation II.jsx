@@ -27,6 +27,10 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	var _doc = null;
 	var _ref = null;
 	var _title = '';
+	var _history = {
+		layers: [],
+		active: Number.NaN
+	};
 	
 	//----------------------------------------------------------------------
 	// Private methods:
@@ -40,10 +44,17 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	
 	_private.main = function() {
 		
+		// Record layer visibility:
+		_private.history();
+		
+		// Make palette window:
 		_ref = _private.palette();
+		
+		// Center and show the palette window:
 		_ref.center();
 		_ref.show();
 		
+		// Focus on active layer:
 		_private.focus();
 		
 	};
@@ -116,13 +127,15 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			group2: Group { \
 				alignChildren: ["fill", "top"], \
 				orientation: "row", \
-				start: Button { text: "Cycle Layers" } \
+				start: Button { text: "Cycle Layers" }, \
+				end: Button { text: "Close" } \
 			} \
 		}';
 		
 		// Instanciate `Window` class with setup from above:
 		var palette = new Window(meta, _title, undefined, {
 			//option: value
+			//closeButton: false
 		});
 		
 		// Selected checkbox:
@@ -142,7 +155,16 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		};
 		
 		// Close and/or palette UI close buttons:
+		palette.group2.end.onClick = function() {
+			
+			palette.close();
+			
+		};
+		
 		palette.onClose = function() {
+			
+			// Restore layer visibility:
+			_private.btm('restore'); // This only works if sent via BridgeTalk message. :(
 			
 			// Make sure to clean up actions:
 			_private.unload();
@@ -456,6 +478,49 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 		
 	};
 	
+	/**
+	 * Creates layer visibility history and handles layer visibility restoration.
+	 *
+	 * @param {boolean} restore If `true`, then restory history as found in `_history` array.
+	 * @return {void}
+	 */
+	
+	_private.history = function(restore) {
+		
+		var layers = _doc.layers;
+		var i;
+		var il;
+		
+		if (restore) {
+			
+			_doc.activeLayer = _history.active;
+			
+		} else {
+			
+			_history.active = _doc.activeLayer;
+			
+		}
+		
+		// Loop over all top-level layers in document:
+		for (i = 0, il = layers.length; i < il; i++) {
+			
+			// Do we want to restore previous layer's visibility?
+			if (restore) {
+				
+				// Yes, so get visibility flags from history array:
+				layers[i].visible = _history.layers[i];
+				
+			} else {
+				
+				// Not now, but create history array for later restoration:
+				_history.layers[i] = layers[i].visible;
+				
+			}
+		
+		}
+		
+	}
+	
 	//----------------------------------------------------------------------
 	// Public methods:
 	//----------------------------------------------------------------------
@@ -497,6 +562,19 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 	_$this.update = function() {
 		
 		_private.focus(true);
+		
+	};
+	
+	/**
+	 * Restores layer visibility; called internally via BridgeTalk message.
+	 *
+	 * @return {void}
+	 */
+	
+	_$this.restore = function() {
+		
+		// Return layer visibility back to starting state:
+		_private.history(true); // Passing boolean `true` to force restoration.
 		
 	};
 	

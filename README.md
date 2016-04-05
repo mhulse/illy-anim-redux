@@ -30,6 +30,8 @@ Palette window:
 
 Using the radio and check box options, click the `Start` button to animate through layers.
 
+This plugin will use the “active” layer as the starting frame; upon palette close, the original layer visibility will be restored.
+
 **More documentation coming soon.**
 
 ## Big ups …
