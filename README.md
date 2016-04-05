@@ -26,7 +26,7 @@ The script’s filename, minus the file extension, will appear in the Scripts me
 
 Palette window:
 
-![illy-anim-ii-palette](https://cloud.githubusercontent.com/assets/218624/12005504/18bdc7f4-ab5d-11e5-847b-fa80a28fa457.png)
+![](example.png)
 
 Using the radio and check box options, click the `Start` button to animate through layers.
 
