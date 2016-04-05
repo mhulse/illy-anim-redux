@@ -9,8 +9,6 @@
 # Install files:
 function install() {
 	
-	echo "foo"
-	
 	# Installation folder:
 	target="@mhulse"
 	
