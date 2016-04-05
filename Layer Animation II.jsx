@@ -116,7 +116,7 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 			group2: Group { \
 				alignChildren: ["fill", "top"], \
 				orientation: "row", \
-				start: Button { text: "Start" } \
+				start: Button { text: "Cycle Layers" } \
 			} \
 		}';
 		
