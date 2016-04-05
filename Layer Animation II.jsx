@@ -110,13 +110,13 @@ this[NS] = (function(_$this, _$application, _$window, undefined) {
 				orientation: "row", \
 				$$down: RadioButton { text: "Top down", value: "true" }, \
 				$$up: RadioButton { text: "Bottom up" }, \
-				$$pong: Checkbox { text: "Ping pong" } \
+				$$pong: Checkbox { text: "Ping pong" }, \
 				$$selected: Checkbox { text: "Use selected layers" } \
 			}, \
 			group2: Group { \
 				alignChildren: ["fill", "top"], \
 				orientation: "row", \
-				$$start: Button { text: "Start" }, \
+				$$start: Button { text: "Start" } \
 			} \
 		}';
 		
