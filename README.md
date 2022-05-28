@@ -4,7 +4,7 @@
 
 ## Why “redux”?
 
-My [first layer animation script](https://github.com/pixelfoot/illy-anim) stopped working [after an OS X El Capitan upgrade](https://forums.adobe.com/message/8206533), so … I ended up writing [Layer Animation II.jsx](Layer Animation II.jsx).
+My [first layer animation script](https://github.com/pixelfoot/illy-anim) stopped working [after an OS X El Capitan upgrade](https://forums.adobe.com/message/8206533), so … I ended up writing Layer Animation II.jsx.
 
 ## Compatibility
 
@@ -18,7 +18,7 @@ Use the below single-line Unix bash command(s) to quickly install this script in
 bash <(curl -sL https://git.io/vVuxA)
 ```
 
-Alternatively, you can dowload [`Layer Animation II.jsx`](Layer Animation II.jsx) into your Illustrator `Scripts` folder, located in the `/lllustrator CC/Presets` folder in your `lllustrator CC` installation directory.
+Alternatively, you can dowload Layer Animation II.jsx into your Illustrator `Scripts` folder, located in the `/lllustrator CC/Presets` folder in your `lllustrator CC` installation directory.
 
 The script’s filename, minus the file extension, will appear in the Scripts menu.
 
